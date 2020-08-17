@@ -9,6 +9,7 @@ const p1 = {
     pieces: new Array(7).fill(null),
     piecePlaces: Array.from(document.querySelectorAll(`.p1-panel .piece`)),
     score: 0,
+    scoreBoard: document.querySelector(`.p1-panel score`),
     lives: document.querySelector(`.p1-panel progress.lives`),
     panel: document.querySelector(`.p1-panel`)
 };
@@ -16,6 +17,7 @@ const p2 = {
     pieces: new Array(7).fill(null),
     piecePlaces: Array.from(document.querySelectorAll(`.p2-panel .piece`)),
     score: 0,
+    scoreBoard: document.querySelector(`.p2-panel score`),
     lives: document.querySelector(`.p2-panel progress.lives`),
     panel: document.querySelector(`.p2-panel`)
 };
@@ -507,7 +509,7 @@ function pullLetter() {
                 };
             });
         };
-    if (this == window) return pullAct(player, allPlaces.filter(p => p.hasChildNodes()).map(p => p.firstChild));
+    if (this == window) return pullAct(player, allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).map(p => p.firstChild));
     this.removeEventListener(`click`, pullLetter);
     selectedPiece.classList.remove(`selected`);
     allPlaces.forEach(p => {
@@ -750,6 +752,7 @@ function resetTurn(player) {
     });
     swapTurn = true;
     nextChecks.forEach(nc => nc.innerHTML = `Pas`);
+    player.scoreBoard.innerHTML = player.score;
     p1IsNext = !p1IsNext;
     return gamePlay();
 };
@@ -817,4 +820,3 @@ nextChecks.forEach(nc => {
 });
 
 gamePlay();
-// ! Beta Version
