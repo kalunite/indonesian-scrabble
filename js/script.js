@@ -9,7 +9,7 @@ const p1 = {
     pieces: new Array(7).fill(null),
     piecePlaces: Array.from(document.querySelectorAll(`.p1-panel .piece`)),
     score: 0,
-    scoreBoard: document.querySelector(`.p1-panel score`),
+    scoreBoard: document.querySelector(`.p1-panel .score`),
     lives: document.querySelector(`.p1-panel progress.lives`),
     panel: document.querySelector(`.p1-panel`)
 };
@@ -17,7 +17,7 @@ const p2 = {
     pieces: new Array(7).fill(null),
     piecePlaces: Array.from(document.querySelectorAll(`.p2-panel .piece`)),
     score: 0,
-    scoreBoard: document.querySelector(`.p2-panel score`),
+    scoreBoard: document.querySelector(`.p2-panel .score`),
     lives: document.querySelector(`.p2-panel progress.lives`),
     panel: document.querySelector(`.p2-panel`)
 };
