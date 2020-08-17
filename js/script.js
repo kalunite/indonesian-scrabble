@@ -817,4 +817,3 @@ nextChecks.forEach(nc => {
 });
 
 gamePlay();
-// ! Beta Version
