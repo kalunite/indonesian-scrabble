@@ -6,6 +6,7 @@ const allPlaces = Array.from(document.querySelectorAll(`td`)),
     loading = document.querySelector(`.loading`);
 
 const p1 = {
+    name: `P1`,
     pieces: new Array(7).fill(null),
     piecePlaces: Array.from(document.querySelectorAll(`.p1-panel .piece`)),
     score: 0,
@@ -14,6 +15,7 @@ const p1 = {
     panel: document.querySelector(`.p1-panel`)
 };
 const p2 = {
+    name: `P2`,
     pieces: new Array(7).fill(null),
     piecePlaces: Array.from(document.querySelectorAll(`.p2-panel .piece`)),
     score: 0,
@@ -23,7 +25,7 @@ const p2 = {
 };
 
 let selectedPiece,
-    passCount = 0;
+    passCount = 0,
     p1IsNext = true,
     swapTurn = true,
     letters = new Array(100)
@@ -54,7 +56,7 @@ let selectedPiece,
     .fill(new Piece(`Z`, 10), 99, 100),
     kindsLetter = [],
     places = [];
-    
+
 function Piece(kind, value) {
     this.kind = kind;
     this.value = value;
@@ -106,10 +108,10 @@ function putPieces(player) {
 function swapPiece() {
     let selectedSwaps = [],
         swapAct = player => {
-           for (let iss = 0; iss < selectedSwaps.length; iss++) { 
+            for (let iss = 0; iss < selectedSwaps.length; iss++) {
                 for (let ipp = 0; ipp < player.pieces.length; ipp++) {
                     if (
-                        player.pieces[ipp] != null && selectedSwaps[iss] != null && 
+                        player.pieces[ipp] != null && selectedSwaps[iss] != null &&
                         selectedSwaps[iss].kind == player.pieces[ipp].kind
                     ) {
                         letters.push(player.pieces[ipp]);
@@ -128,6 +130,7 @@ function swapPiece() {
                 return resetTurn(player);
             }, 1000);
         };
+
     function swapSelect() {
         if (this.classList.contains(`selected`)) {
             for (let i = 0; i < selectedSwaps.length; i++) {
@@ -137,12 +140,15 @@ function swapPiece() {
                 };
             };
         };
-        selectedSwaps.push({kind: this.dataset.kind, value: this.dataset.value});
+        selectedSwaps.push({
+            kind: this.dataset.kind,
+            value: this.dataset.value
+        });
         this.classList.add(`selected`);
     };
     if (swapTurn) {
-        let player = p1IsNext ? p1 : p2
-            pieceAvailableToSwap = player.pieces.filter(p => p != null).map(p => `<img src=img/${p.kind}.png class=available-swap data-kind=${p.kind} data-value=${p.value}>`).join(``),
+        let player = p1IsNext ? p1 : p2,
+            pieceAvailableToSwap = player.pieces.filter(p => p != null).map(p => `<img src=img/${p.kind}.png class=available-swap data-kind=${p.kind} data-value=${p.value}>`).join(``);
         Swal.fire({
             width: 300,
             title: `Pilih huruf yang akan ditukar !!!`,
@@ -177,32 +183,35 @@ function swapPiece() {
 
 function swapBlankLetter() {
     let swapAct = player => {
-            if (player.piecePlaces.some(p => p.hasChildNodes() && p.firstChild.dataset.kind == this.dataset.kind)) {
-                this.classList.remove(`blank-filled`);
-                this.classList.remove(`available-switch`);
-                if (document.querySelector(`.available-switch`) != null && 
-                    document.querySelector(`.available-switch`).dataset.kind == this.dataset.kind &&
-                    player.pieces.some(p => !Array.from(document.querySelectorAll(`.blank-filled`)).some(b => p != null && b.dataset.kind == p.kind))
-                ) {
-                    document.querySelector(`.available-switch`).classList.remove(`available-switch`);
-                };
-                for (let i = 0; i < player.piecePlaces.length; i++) {
-                    if (player.piecePlaces[i].hasChildNodes() && player.piecePlaces[i].firstChild.dataset.kind == this.dataset.kind) {
-                        this.setAttribute(`data-value`, player.piecePlaces[i].firstChild.dataset.value);
-                        player.pieces.splice(i, 1, {kind: `blank`, value: 0});
-                        player.piecePlaces[i].firstChild.classList.remove(`selected`);
-                        allPlaces.forEach(p => {
-                            p.classList.remove(`available`);
-                            p.removeEventListener(`click`, putLetter);
-                        });
-                        player.piecePlaces.filter(place => place.hasChildNodes()).forEach(place => {
-                            place.removeChild(place.firstChild);
-                        });
-                        return putPieces(player);
-                    };
+        if (player.piecePlaces.some(p => p.hasChildNodes() && p.firstChild.dataset.kind == this.dataset.kind)) {
+            this.classList.remove(`blank-filled`);
+            this.classList.remove(`available-switch`);
+            if (document.querySelector(`.available-switch`) != null &&
+                document.querySelector(`.available-switch`).dataset.kind == this.dataset.kind &&
+                player.pieces.some(p => !Array.from(document.querySelectorAll(`.blank-filled`)).some(b => p != null && b.dataset.kind == p.kind))
+            ) {
+                document.querySelector(`.available-switch`).classList.remove(`available-switch`);
+            };
+            for (let i = 0; i < player.piecePlaces.length; i++) {
+                if (player.piecePlaces[i].hasChildNodes() && player.piecePlaces[i].firstChild.dataset.kind == this.dataset.kind) {
+                    this.setAttribute(`data-value`, player.piecePlaces[i].firstChild.dataset.value);
+                    player.pieces.splice(i, 1, {
+                        kind: `blank`,
+                        value: 0
+                    });
+                    player.piecePlaces[i].firstChild.classList.remove(`selected`);
+                    allPlaces.forEach(p => {
+                        p.classList.remove(`available`);
+                        p.removeEventListener(`click`, putLetter);
+                    });
+                    player.piecePlaces.filter(place => place.hasChildNodes()).forEach(place => {
+                        place.removeChild(place.firstChild);
+                    });
+                    return putPieces(player);
                 };
             };
         };
+    };
     p1IsNext ? swapAct(p1) : swapAct(p2);
 };
 
@@ -263,7 +272,7 @@ function nextPlace() {
                     placeAvailable.push(places[row + 1][col]);
                 };
             } else {
-                closestRange(row, col);             
+                closestRange(row, col);
             };
             if (
                 places[row].filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).length > 1
@@ -310,7 +319,7 @@ function nextPlace() {
             ) {
                 placeAvailable.push(places[row][col - 1], places[row][col + 1]);
             } else {
-                closestRange(row, col);             
+                closestRange(row, col);
             };
             if (
                 colomnPlaces(col).filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).length > 1
@@ -349,7 +358,7 @@ function nextPlace() {
                 places[ir][ic].firstChild.classList.contains(`confirmed`) &&
                 allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).length == 0
             ) {
-                closestRange(ir, ic);  
+                closestRange(ir, ic);
             } else if (
                 places[ir][ic].hasChildNodes() &&
                 !places[ir][ic].firstChild.classList.contains(`confirmed`)
@@ -373,7 +382,7 @@ function nextPlace() {
                 ) {
                     colAreasSelecting(ir, ic);
                 } else {
-                    closestRange(ir, ic);  
+                    closestRange(ir, ic);
                 };
             };
         };
@@ -393,7 +402,7 @@ function putLetter() {
                 cancelButtonText: `Batal`,
                 inputOptions: kindsLetter,
                 inputPlaceholder: `Huruf`,
-                preConfirm: result => {    
+                preConfirm: result => {
                     if (result == ``) {
                         Swal.showValidationMessage(`Pilih 1 jenis huruf`);
                     };
@@ -437,19 +446,19 @@ function putLetter() {
 };
 
 function pullLetter() {
-    let player = p1IsNext ? p1 : p2;
+    let player = p1IsNext ? p1 : p2,
         isConnected = piece => {
             for (let ir = 0; ir < places.length; ir++) {
                 for (let ic = 0; ic < places[ir].length; ic++) {
                     if (piece.parentNode == places[ir][ic]) {
                         if (
-                            places[ir - 1] != null && places[ir - 1][ic].hasChildNodes() && places[ir - 1][ic].firstChild.classList.contains(`confirmed`) || 
+                            places[ir - 1] != null && places[ir - 1][ic].hasChildNodes() && places[ir - 1][ic].firstChild.classList.contains(`confirmed`) ||
                             places[ir][ic - 1] != null && places[ir][ic - 1].hasChildNodes() &&
                             places[ir][ic - 1].firstChild.classList.contains(`confirmed`) ||
-                            places[ir + 1] != null && places[ir + 1][ic].hasChildNodes() && places[ir + 1][ic].firstChild.classList.contains(`confirmed`) || 
+                            places[ir + 1] != null && places[ir + 1][ic].hasChildNodes() && places[ir + 1][ic].firstChild.classList.contains(`confirmed`) ||
                             places[ir][ic + 1] != null && places[ir][ic + 1].hasChildNodes() &&
                             places[ir][ic + 1].firstChild.classList.contains(`confirmed`)
-                        ) { 
+                        ) {
                             return true;
                         } else {
                             return false;
@@ -460,7 +469,6 @@ function pullLetter() {
         },
         pieceToPull = () => {
             let pieceAvailableToPull = [],
-                pieceUnavailableToPull = [],
                 accum;
             for (let ir = 0; ir < places.length; ir++) {
                 for (let ic = 0; ic < places[ir].length; ic++) {
@@ -477,15 +485,15 @@ function pullLetter() {
                             while (places[ir][ic + accum] != null && places[ir][ic + accum].hasChildNodes()) {
                                 pieceAvailableToPull.push(places[ir][ic + accum].firstChild);
                                 accum++;
-                            };    
+                            };
                         };
                         pieceAvailableToPull = pieceAvailableToPull.filter(p => !p.classList.contains(`confirmed`));
-                        pieceUnavailableToPull = allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`) && !pieceAvailableToPull.includes(p.firstChild)).map(p => p.firstChild);
                         if (
-                            pieceAvailableToPull.includes(startPlace.firstChild) || pieceAvailableToPull.some(p => isConnected(p)) && pieceUnavailableToPull.every(p => !isConnected(p))
-                            ) {
-                                pieceAvailableToPull = [];
-                                allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).forEach(p => pieceAvailableToPull.push(p.firstChild));
+                            pieceAvailableToPull.includes(startPlace.firstChild) ||
+                            pieceAvailableToPull.some(p => isConnected(p))
+                        ) {
+                            pieceAvailableToPull = [];
+                            allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).forEach(p => pieceAvailableToPull.push(p.firstChild));
                         };
                     };
                 };
@@ -502,7 +510,10 @@ function pullLetter() {
                 p.parentNode.removeChild(p);
                 for (let i = 0; i < player.piecePlaces.length; i++) {
                     if (!player.piecePlaces[i].hasChildNodes()) {
-                        player.pieces.splice(i, 1, {kind: p.dataset.kind, value: parseInt(p.dataset.value)});
+                        player.pieces.splice(i, 1, {
+                            kind: p.dataset.kind,
+                            value: parseInt(p.dataset.value)
+                        });
                         player.piecePlaces[i].appendChild(p);
                         return player.piecePlaces[i].addEventListener(`click`, selectLetter);
                     };
@@ -529,47 +540,11 @@ function selectedWords() {
         allWords = [],
         accum,
         accum2,
-        horizontalWordSearch = (globalVessel, mainVessel, row, col, acc, vessel = null) => {
+        hWordSearch = (globalVessel, mainVessel, row, col, acc, vessel = null) => {
             mainVessel.push(places[row][col].firstChild);
             if (vessel != null) {
                 vessel = [];
-                verticalWordSearch(globalVessel, vessel, row, col, accum2);
-                if (vessel.length >= 2) {
-                    globalVessel.push(vessel);
-                };
-            };
-            if (places[row - 1] != null && places[row - 1][col].hasChildNodes()) {
-                acc = 1;
-                while (places[row - acc] != null && places[row - acc][col].hasChildNodes()) {
-                    mainVessel.unshift(places[row - acc][col].firstChild);
-                    if (vessel != null && !places[row - acc][col].firstChild.classList.contains(`confirmed`)) {
-                        vessel = [];
-                        verticalWordSearch(globalVessel, vessel, row - acc, col, accum2);
-                        if (vessel.length >= 2) {
-                            globalVessel.push(vessel);
-                        };
-                    };
-                    acc++;
-                };
-            };
-            acc = 1;
-            while (places[row + acc] != null && places[row + acc][col].hasChildNodes()) {
-                mainVessel.push(places[row + acc][col].firstChild);
-                if (vessel != null && !places[row + acc][col].firstChild.classList.contains(`confirmed`)) {
-                    vessel = [];
-                    verticalWordSearch(globalVessel, vessel, row + acc, col, accum2);
-                    if (vessel.length >= 2) {
-                        globalVessel.push(vessel);
-                    };
-                };
-                acc++;
-            };
-        },
-        verticalWordSearch = (globalVessel, mainVessel, row, col, acc, vessel = null) => {
-            mainVessel.push(places[row][col].firstChild);
-            if (vessel != null) {
-                vessel = [];
-                horizontalWordSearch(globalVessel, vessel, row, col, accum2);
+                vWordSearch(globalVessel, vessel, row, col, accum2);
                 if (vessel.length >= 2) {
                     globalVessel.push(vessel);
                 };
@@ -580,7 +555,7 @@ function selectedWords() {
                     mainVessel.unshift(places[row][col - acc].firstChild);
                     if (vessel != null && !places[row][col - acc].firstChild.classList.contains(`confirmed`)) {
                         vessel = [];
-                        horizontalWordSearch(globalVessel, vessel, row, col - acc, accum2);
+                        vWordSearch(globalVessel, vessel, row, col - acc, accum2);
                         if (vessel.length >= 2) {
                             globalVessel.push(vessel);
                         };
@@ -593,7 +568,43 @@ function selectedWords() {
                 mainVessel.push(places[row][col + acc].firstChild);
                 if (vessel != null && !places[row][col + acc].firstChild.classList.contains(`confirmed`)) {
                     vessel = [];
-                    horizontalWordSearch(globalVessel, vessel, row, col + acc, accum2);
+                    vWordSearch(globalVessel, vessel, row, col + acc, accum2);
+                    if (vessel.length >= 2) {
+                        globalVessel.push(vessel);
+                    };
+                };
+                acc++;
+            };
+        },
+        vWordSearch = (globalVessel, mainVessel, row, col, acc, vessel = null) => {
+            mainVessel.push(places[row][col].firstChild);
+            if (vessel != null) {
+                vessel = [];
+                hWordSearch(globalVessel, vessel, row, col, accum2);
+                if (vessel.length >= 2) {
+                    globalVessel.push(vessel);
+                };
+            };
+            if (places[row - 1] != null && places[row - 1][col].hasChildNodes()) {
+                acc = 1;
+                while (places[row - acc] != null && places[row - acc][col].hasChildNodes()) {
+                    mainVessel.unshift(places[row - acc][col].firstChild);
+                    if (vessel != null && !places[row - acc][col].firstChild.classList.contains(`confirmed`)) {
+                        vessel = [];
+                        hWordSearch(globalVessel, vessel, row - acc, col, accum2);
+                        if (vessel.length >= 2) {
+                            globalVessel.push(vessel);
+                        };
+                    };
+                    acc++;
+                };
+            };
+            acc = 1;
+            while (places[row + acc] != null && places[row + acc][col].hasChildNodes()) {
+                mainVessel.push(places[row + acc][col].firstChild);
+                if (vessel != null && !places[row + acc][col].firstChild.classList.contains(`confirmed`)) {
+                    vessel = [];
+                    hWordSearch(globalVessel, vessel, row + acc, col, accum2);
                     if (vessel.length >= 2) {
                         globalVessel.push(vessel);
                     };
@@ -604,10 +615,16 @@ function selectedWords() {
     for (let ir = 0; ir < places.length; ir++) {
         for (let ic = 0; ic < places[ir].length; ic++) {
             if (places[ir][ic].hasChildNodes() && !places[ir][ic].firstChild.classList.contains(`confirmed`)) {
-                if (places[ir + 1] != null && places[ir + 1][ic].hasChildNodes()) {
-                    horizontalWordSearch(allWords, mainWord, ir, ic, accum, word);
-                } else if (places[ir][ic + 1] != null && places[ir][ic + 1].hasChildNodes()) {
-                    verticalWordSearch(allWords, mainWord, ir, ic, accum, word);
+                if (
+                    places[ir][ic + 1] != null && places[ir][ic + 1].hasChildNodes() ||
+                    places[ir][ic - 1] != null && places[ir][ic - 1].hasChildNodes()
+                ) {
+                    hWordSearch(allWords, mainWord, ir, ic, accum, word);
+                } else if (
+                    places[ir + 1] != null && places[ir + 1][ic].hasChildNodes() ||
+                    places[ir - 1] != null && places[ir - 1][ic].hasChildNodes()
+                ) {
+                    vWordSearch(allWords, mainWord, ir, ic, accum, word);
                 };
                 allWords.unshift(mainWord);
                 return mainWord.length >= 2 ? allWords : allWords = [];
@@ -632,16 +649,16 @@ function scoresCount(pieces) {
         });
         scores.push(scoresPerWord.reduce((pv, cv) => pv + cv));
         if (words[i].some(w => w.parentNode.classList.contains(`word-2`))) {
-            scores[i] *= Math.pow(2, words[i].filter(w =>  w.parentNode.classList.contains(`word-2`)).length);
+            scores[i] *= Math.pow(2, words[i].filter(w => w.parentNode.classList.contains(`word-2`)).length);
         } else if (words[i].some(w => w.parentNode.classList.contains(`word-3`))) {
-            scores[i] *= Math.pow(3, words[i].filter(w =>  w.parentNode.classList.contains(`word-3`)).length);
+            scores[i] *= Math.pow(3, words[i].filter(w => w.parentNode.classList.contains(`word-3`)).length);
         };
     };
     return scores;
 };
 
 function checkingWords(pieces, words, score) {
-    let player = p1IsNext ? p1 : p2;
+    let player = p1IsNext ? p1 : p2,
         promisesOfWords = [],
         mainWord = [...words][0],
         fetchMainWord = () => {
@@ -666,18 +683,19 @@ function checkingWords(pieces, words, score) {
                             place.removeChild(place.firstChild);
                         });
                         putPieces(player);
-                    } else if (player.piecePlaces.filter(place => place.hasChildNodes()).length = 0) {
+                    } else if (allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).map(p => p.firstChild).length == 7) {
                         player.score += 50;
                         Swal.fire({
                             width: 300,
-                            title: `Bingo !!! (+50 Poin)`,
+                            title: `Bingo !!!`,
+                            text: `(+50 Poin)`,
                             icon: `success`,
                             timer: 3000,
                             timerProgressBar: true,
                             showConfirmButton: false
                         });
                     };
-                    return resetTurn(player);               
+                    return resetTurn(player);
                 })
                 .catch(err => {
                     if (err == `TypeError: Failed to fetch`) {
@@ -753,8 +771,48 @@ function resetTurn(player) {
     swapTurn = true;
     nextChecks.forEach(nc => nc.innerHTML = `Pas`);
     player.scoreBoard.innerHTML = player.score;
-    p1IsNext = !p1IsNext;
-    return gamePlay();
+    return checkingWinner(player);
+};
+
+function checkingWinner(player) {
+    let enemy = player == p1 ? p2 : p1,
+        countingScore = (player, enemy) => {
+            if (player.score > enemy.score) {
+                Swal.fire({
+                    width: 300,
+                    title: `${player.name} Menang`,
+                    text: `${player.name} (${player.score}) > (${enemy.score}) ${enemy.name}`
+                });
+            };
+        },
+        countingValueOfPiecesLeft = enemy => {
+            let values = enemy.pieces.filter(Boolean).map(piece => piece.value).reduce((pv, cv) => pv + cv);
+            return values;
+        };
+    if (player.lives.value == 0) {
+        Swal.fire({
+            width: 300,
+            title: `${enemy.name} Menang`,
+            text: `Nyawa ${player.name} telah habis !!!`
+        });
+    } else if (passCount == 6 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
+        if (letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
+            player.score += countingValueOfPiecesLeft(enemy);
+            enemy.score -= countingValueOfPiecesLeft(enemy);
+        };
+        countingScore(player, enemy);
+        countingScore(enemy, player);
+        if (player.score == enemy.score) {
+            Swal.fire({
+                width: 300,
+                title: `Imbang`,
+                text: `${player.name} (${player.score}) == (${enemy.score}) ${enemy.name}`
+            });
+        };
+    } else {
+        p1IsNext = !p1IsNext;
+        return gamePlay();
+    };
 };
 
 function turnIn() {
@@ -784,7 +842,7 @@ function turnIn() {
 };
 
 function gamePlay() {
-    let player = p1IsNext ? p1 : p2
+    let player = p1IsNext ? p1 : p2,
         enemy = !p1IsNext ? p1 : p2;
     player.panel.style.display = `flex`;
     enemy.panel.style.display = `none`;
@@ -803,7 +861,7 @@ nextChecks.forEach(nc => {
             wordsScore;
         if (nc.innerHTML == `Pas`) {
             passCount += 1;
-            return resetTurn(player);       
+            return resetTurn(player);
         } else if (nc.innerHTML == `Cek`) {
             wordsOfPieces = [...selectedWords()];
             if (wordsOfPieces.length > 0) {
@@ -820,4 +878,3 @@ nextChecks.forEach(nc => {
 });
 
 gamePlay();
-// Beta Version 1.0.0.
