@@ -24,13 +24,6 @@ td {
     padding: 0;
 }
 
-ins {
-    background-color: azure;
-    border-radius: 50%;
-    padding: 3px 7px;
-    text-decoration: none;
-}
-
 img {
     display: flex;
     width: 100%;
@@ -121,10 +114,10 @@ img {
 .p1-panel,
 .p2-panel {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
     width: 86%;
-    height: 75%;
+    height: 100%;
     line-height: 110px;
     background-color: azure;
     border-radius: 25px;
@@ -144,12 +137,12 @@ img {
     background-color: black;
     display: block;
     color: azure;
-    font-size: 30px;
-    line-height: 100px;
+    font-size: 25px;
+    line-height: 77.5px;
     border-radius: 50%;
     text-align: center;
-    width: 100px;
-    height: 100px;
+    width: 7%;
+    height: 75%;
     cursor: pointer;
 }
 
@@ -158,13 +151,14 @@ img {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: space-between;
 }
 
 .pieces-place {
     width: 100%;
-    height: 70%;
+    height: 85%;
     display: flex;
+    align-items: center;
     justify-content: space-between;
 }
 
@@ -176,13 +170,13 @@ img {
 progress.lives {
     background-color: green;
     width: 100%;
-    height: 20%;
+    height: 15%;
 }
 
 .player {
     color: azure;
     font-size: 25px;
-    line-height: 45px;
+    line-height: 100px;
     border-radius: 50%;
     text-align: center;
     width: 100px;
@@ -193,7 +187,10 @@ progress.lives {
     background-color: blue;
 }
 
-.p1-panel .player ins {
+.p1-panel .player span {
+    background-color: azure;
+    border-radius: 50%;
+    padding: 3px 7px;
     color: blue;
     border: 3px double blue;
 }
@@ -202,7 +199,10 @@ progress.lives {
     background-color: red;
 }
 
-.p2-panel .player ins {
+.p2-panel .player span {
+    background-color: azure;
+    border-radius: 50%;
+    padding: 3px 7px;
     color: red;
     border: 3px double red;
 }
@@ -211,12 +211,12 @@ progress.lives {
     font-size: 20px;
 }
 
-.game-helps {
+/* .game-helps {
     width: 7%;
     height: 75%;
     background-color: black;
     border-radius: 50%;
-}
+} */
 
 .selected {
     border: 3px solid rgb(175, 95, 250);
@@ -250,16 +250,16 @@ progress.lives {
     height: 35px;
 }
 
-.pack:hover {
-    box-shadow: 0 0 25px 25px black;
+.choose-mode div {
+    margin: 15px;
+    display: inline-block;
 }
 
-.next-check:hover {
-    background-color: azure;
-    color: black;
-    border: 3px solid black;
-    line-height: 94px;
-    box-sizing: border-box;
+.choose-mode img {
+    width: 70px;
+    height: 70px;
+    margin: auto;
+    border-radius: 50%;
 }
 
 .loading {
@@ -283,6 +283,17 @@ progress.lives {
     margin: 225px auto 25px;
 }
 
+.pack:hover {
+    box-shadow: 0 0 25px 25px black;
+}
+
+.next-check:hover {
+    background-color: azure;
+    color: black;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
 @media screen and (max-width: 1365px) {
     td {
         width: 29px;
@@ -297,5 +308,47 @@ progress.lives {
 
     .panels {
         height: 16%;
+    }
+
+    .next-check {
+        line-height: 50px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .pack-panel .length {
+        font-size: 10px;
+        margin-top: -25px;
+    }
+
+    .players-panel {
+        height: 50%;
+    }
+
+    .player {
+        line-height: 30px;
+        width: 30px;
+        height: 30px;
+        font-size: 15px;
+    }
+
+    .players-panel .player span {
+        padding: 1px 3px;
+    }
+
+    .piece {
+        width: 30px;
+        height: 30px;
+    }
+
+    .score {
+        font-size: 13px;
+    }
+
+    .next-check {
+        line-height: 33px;
+        font-size: 10px;
+        width: 7%;
+        height: 75%;
     }
 }

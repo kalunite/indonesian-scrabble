@@ -1,12 +1,13 @@
 const allPlaces = Array.from(document.querySelectorAll(`td`)),
     pack = document.querySelector(`.pack`),
     packLength = document.querySelector(`.pack-panel .length`),
-    nextChecks = Array.from(document.querySelectorAll(`.next-check`)),
+    nextCheck = document.querySelector(`.next-check`),
     startPlace = document.querySelector(`.start-word`),
     loading = document.querySelector(`.loading`);
 
 const p1 = {
     name: `P1`,
+    icon: `img/p1-icon.png`,
     pieces: new Array(7).fill(null),
     piecePlaces: Array.from(document.querySelectorAll(`.p1-panel .piece`)),
     score: 0,
@@ -16,6 +17,7 @@ const p1 = {
 };
 const p2 = {
     name: `P2`,
+    icon: `img/p2-icon.png`,
     pieces: new Array(7).fill(null),
     piecePlaces: Array.from(document.querySelectorAll(`.p2-panel .piece`)),
     score: 0,
@@ -26,6 +28,7 @@ const p2 = {
 
 let selectedPiece,
     passCount = 0,
+    singleMode = false,
     p1IsNext = true,
     swapTurn = true,
     letters = new Array(100)
@@ -431,7 +434,7 @@ function putLetter() {
             });
             swapTurn = false;
             this.appendChild(selectedPiece);
-            nextChecks.forEach(nc => nc.innerHTML = `Cek`);
+            nextCheck.innerHTML = `Cek`;
         };
     selectedPiece.classList.remove(`selected`);
     allPlaces.forEach(p => {
@@ -530,7 +533,7 @@ function pullLetter() {
     pullAct(player, pieceToPull());
     if (allPlaces.filter(place => place.hasChildNodes() && !place.firstChild.classList.contains(`confirmed`)).length == 0) {
         swapTurn = true;
-        nextChecks.forEach(nc => nc.innerHTML = `Pas`);
+        nextCheck.innerHTML = `Pas`;
     };
 };
 
@@ -674,28 +677,31 @@ function checkingWords(pieces, words, score) {
                         title: `${mainWord} (+${score} Poin)`,
                         html: defs,
                         icon: `info`
+                    }).then(() => {
+                        player.score += score;
+                        removeMultipleScore(pieces);
+                        if (player.piecePlaces.filter(place => place.hasChildNodes()).length > 0) {
+                            randomSetPieces(player);
+                            player.piecePlaces.filter(place => place.hasChildNodes()).forEach(place => {
+                                place.removeChild(place.firstChild);
+                            });
+                            putPieces(player);
+                            return resetTurn(player);
+                        } else if (allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).map(p => p.firstChild).length == 7) {
+                            player.score += 50;
+                            Swal.fire({
+                                width: 300,
+                                title: `Bingo !!!`,
+                                text: `(+50 Poin)`,
+                                icon: `success`,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false
+                            }).then(() => {
+                                return resetTurn(player);
+                            });
+                        };
                     });
-                    player.score += score;
-                    removeMultipleScore(pieces);
-                    if (player.piecePlaces.filter(place => place.hasChildNodes()).length > 0) {
-                        randomSetPieces(player);
-                        player.piecePlaces.filter(place => place.hasChildNodes()).forEach(place => {
-                            place.removeChild(place.firstChild);
-                        });
-                        putPieces(player);
-                    } else if (allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).map(p => p.firstChild).length == 7) {
-                        player.score += 50;
-                        Swal.fire({
-                            width: 300,
-                            title: `Bingo !!!`,
-                            text: `(+50 Poin)`,
-                            icon: `success`,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            showConfirmButton: false
-                        });
-                    };
-                    return resetTurn(player);
                 })
                 .catch(err => {
                     if (err == `TypeError: Failed to fetch`) {
@@ -756,6 +762,7 @@ function removeMultipleScore(pieces) {
 
 function resetTurn(player) {
     player.piecePlaces.forEach(place => place.removeEventListener(`click`, selectLetter));
+    pack.removeEventListener(`click`, turnIn);
     pack.removeEventListener(`click`, swapPiece);
     allPlaces.forEach(p => {
         p.classList.remove(`available`);
@@ -769,18 +776,39 @@ function resetTurn(player) {
         a.classList.remove(`available-switch`);
     });
     swapTurn = true;
-    nextChecks.forEach(nc => nc.innerHTML = `Pas`);
+    nextCheck.innerHTML = `Pas`;
     player.scoreBoard.innerHTML = player.score;
-    return checkingWinner(player);
+    if (singleMode) {
+        return gameOverCheck(player);
+    } else {
+        return winnerCheck(player);
+    };
 };
 
-function checkingWinner(player) {
+function gameOverCheck(player) {
+    if (player.lives.value == 0 || passCount > 0 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
+        Swal.fire({
+            width: 300,
+            title: `Skor Akhir : ${player.score}`,
+            imageUrl: player.icon,
+            imageWidth: 70,
+            imageHeight: 70
+        });
+    } else {
+        return gamePlay();
+    };
+};
+
+function winnerCheck(player) {
     let enemy = player == p1 ? p2 : p1,
         countingScore = (player, enemy) => {
             if (player.score > enemy.score) {
                 Swal.fire({
                     width: 300,
-                    title: `${player.name} Menang`,
+                    title: `${player.name} Menang !!!`,
+                    imageUrl: player.icon,
+                    imageWidth: 70,
+                    imageHeight: 70,
                     text: `${player.name} (${player.score}) > (${enemy.score}) ${enemy.name}`
                 });
             };
@@ -792,10 +820,13 @@ function checkingWinner(player) {
     if (player.lives.value == 0) {
         Swal.fire({
             width: 300,
-            title: `${enemy.name} Menang`,
+            title: `${enemy.name} Menang !!!`,
+            imageUrl: enemy.icon,
+            imageWidth: 70,
+            imageHeight: 70,
             text: `Nyawa ${player.name} telah habis !!!`
         });
-    } else if (passCount == 6 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
+    } else if (passCount >= 6 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
         if (letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
             player.score += countingValueOfPiecesLeft(enemy);
             enemy.score -= countingValueOfPiecesLeft(enemy);
@@ -805,7 +836,10 @@ function checkingWinner(player) {
         if (player.score == enemy.score) {
             Swal.fire({
                 width: 300,
-                title: `Imbang`,
+                title: `Imbang !!!`,
+                imageUrl: `img/I.png`,
+                imageWidth: 70,
+                imageHeight: 70,
                 text: `${player.name} (${player.score}) == (${enemy.score}) ${enemy.name}`
             });
         };
@@ -841,6 +875,54 @@ function turnIn() {
     p1IsNext ? playerTurn(p1) : playerTurn(p2);
 };
 
+function startScreen() {
+    let selectedMode = null;
+
+    function chooseMode() {
+        document.querySelectorAll(`.choose-mode img`).forEach(m => {
+            m.classList.remove(`selected`);
+        });
+        this.classList.add(`selected`);
+        selectedMode = this;
+    };
+    Swal.fire({
+        width: window.innerWidth,
+        title: `Selamat Datang di 
+                Indonesian Scrabble !!!`,
+        html: `Pilih Mode Permainan !
+                <br>
+                <br>
+                <div class="choose-mode">
+                    <div>
+                        <img src="img/p1-icon.png" alt="P1" class="single-player">
+                        <br>
+                        Pemain Tunggal
+                    </div>
+                    <div>
+                        <img src="img/p2-icon.png" alt="vs-P2" class="multi-player selected">
+                        <br>
+                        Pemain Ganda
+                    </div>
+                </div>`,
+        confirmButtonText: `Mulai !`,
+        imageUrl: `img/logo.png`,
+        imageWidth: 250,
+        imageHeight: 250
+    }).then(result => {
+        if (result.isConfirmed) {
+            singleMode = selectedMode != document.querySelector(`.choose-mode .multi-player`) && selectedMode != null ? true : false;
+        } else {
+            document.querySelectorAll(`.choose-mode img`).forEach(m => {
+                m.removeEventListener(`click`, chooseMode);
+            });
+            return startScreen();
+        };
+    });
+    document.querySelectorAll(`.choose-mode img`).forEach(m => {
+        m.addEventListener(`click`, chooseMode);
+    });
+};
+
 function gamePlay() {
     let player = p1IsNext ? p1 : p2,
         enemy = !p1IsNext ? p1 : p2;
@@ -853,28 +935,27 @@ function gamePlay() {
     };
 };
 
-nextChecks.forEach(nc => {
-    nc.addEventListener(`click`, () => {
-        let player = p1IsNext ? p1 : p2,
-            wordsOfPieces = [],
-            words = [],
-            wordsScore;
-        if (nc.innerHTML == `Pas`) {
-            passCount += 1;
+nextCheck.addEventListener(`click`, () => {
+    let player = p1IsNext ? p1 : p2,
+        wordsOfPieces = [],
+        words = [],
+        wordsScore;
+    if (nextCheck.innerHTML == `Pas`) {
+        passCount += 1;
+        return resetTurn(player);
+    } else if (nextCheck.innerHTML == `Cek`) {
+        wordsOfPieces = [...selectedWords()];
+        if (wordsOfPieces.length > 0) {
+            words = wordsOfPieces.map(word => word.map(w => w.dataset.kind).reduce((pv, cv) => pv + cv));
+            wordsScore = scoresCount(wordsOfPieces).reduce((pv, cv) => pv + cv);
+            return checkingWords(wordsOfPieces, words, wordsScore);
+        } else {
+            pullLetter();
+            player.lives.value -= 1;
             return resetTurn(player);
-        } else if (nc.innerHTML == `Cek`) {
-            wordsOfPieces = [...selectedWords()];
-            if (wordsOfPieces.length > 0) {
-                words = wordsOfPieces.map(word => word.map(w => w.dataset.kind).reduce((pv, cv) => pv + cv));
-                wordsScore = scoresCount(wordsOfPieces).reduce((pv, cv) => pv + cv);
-                return checkingWords(wordsOfPieces, words, wordsScore);
-            } else {
-                pullLetter();
-                player.lives.value -= 1;
-                return resetTurn(player);
-            };
         };
-    });
+    };
 });
 
+startScreen();
 gamePlay();
