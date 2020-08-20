@@ -799,7 +799,7 @@ function gameOverCheck(player) {
             wordsPlayed = 0;
         if (allPoints.length != 0 || allWords.length != 0) {
             highestPoint = allPoints.sort((a, b) => b - a)[0];
-            averagePoint = allPoints.reduce((pv, cv) => pv + cv) / allPoints.length;
+            averagePoint = Math.round(allPoints.reduce((pv, cv) => pv + cv) / allPoints.length);
             longestWord = allWords.map(p => p.length);
             longestWord = longestWord.sort((a, b) => b - a)[0];
             wordsPlayed = allWords.length;
@@ -1003,4 +1003,3 @@ gameHelps.addEventListener(`click`, () => {
 
 startScreen();
 gamePlay();
-// Finished;
