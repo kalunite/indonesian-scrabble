@@ -62,7 +62,6 @@ let selectedPiece,
     places = [],
     allWords = [],
     allPoints = [];
-// TODO bestPoint, averagePoint, longestWord, wordsPlayed
 
 function Piece(kind, value) {
     this.kind = kind;
@@ -794,11 +793,17 @@ function resetTurn(player) {
 
 function gameOverCheck(player) {
     if (player.lives.value == 0 || passCount > 0 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
-        let highestPoint = allPoints.sort((a, b) => b - a)[0],
-            averagePoint = allPoints.reduce((pv, cv) => pv + cv) / allPoints.length,
-            longestWord = allWords.map(p => p.length),
+        let highestPoint = 0,
+            averagePoint = 0,
+            longestWord = 0,
+            wordsPlayed = 0;
+        if (allPoints.length != 0 || allWords.length != 0) {
+            highestPoint = allPoints.sort((a, b) => b - a)[0];
+            averagePoint = allPoints.reduce((pv, cv) => pv + cv) / allPoints.length;
+            longestWord = allWords.map(p => p.length);
+            longestWord = longestWord.sort((a, b) => b - a)[0];
             wordsPlayed = allWords.length;
-        longrstWord = longestWord.sort((a, b) => b - a)[0];
+        };
         Swal.fire({
             width: 300,
             title: `Skor Akhir : ${player.score}`,
