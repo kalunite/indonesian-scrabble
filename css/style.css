@@ -32,6 +32,10 @@ img {
     cursor: pointer;
 }
 
+li {
+    text-align: left;
+}
+
 .game-board {
     width: 100%;
     margin-bottom: 105px;
@@ -211,12 +215,17 @@ progress.lives {
     font-size: 20px;
 }
 
-/* .game-helps {
-    width: 7%;
-    height: 75%;
+.game-helps {
+    width: 20px;
+    height: 15%;
     background-color: black;
+    color: azure;
+    text-align: center;
     border-radius: 50%;
-} */
+    font-size: 15px;
+    line-height: 20px;
+    cursor: pointer;
+}
 
 .selected {
     border: 3px solid rgb(175, 95, 250);
@@ -287,7 +296,8 @@ progress.lives {
     box-shadow: 0 0 25px 25px black;
 }
 
-.next-check:hover {
+.next-check:hover,
+.game-helps:hover {
     background-color: azure;
     color: black;
     border: 1px solid black;
@@ -312,6 +322,11 @@ progress.lives {
 
     .next-check {
         line-height: 50px;
+    }
+
+    .game-helps {
+        line-height: 15px;
+        font-size: 13px;
     }
 }
 

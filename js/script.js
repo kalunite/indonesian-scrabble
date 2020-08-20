@@ -3,7 +3,8 @@ const allPlaces = Array.from(document.querySelectorAll(`td`)),
     packLength = document.querySelector(`.pack-panel .length`),
     nextCheck = document.querySelector(`.next-check`),
     startPlace = document.querySelector(`.start-word`),
-    loading = document.querySelector(`.loading`);
+    loading = document.querySelector(`.loading`),
+    gameHelps = document.querySelector(`.game-helps`);
 
 const p1 = {
     name: `P1`,
@@ -58,7 +59,10 @@ let selectedPiece,
     .fill(new Piece(`Y`, 5), 97, 99)
     .fill(new Piece(`Z`, 10), 99, 100),
     kindsLetter = [],
-    places = [];
+    places = [],
+    allWords = [],
+    allPoints = [];
+// TODO bestPoint, averagePoint, longestWord, wordsPlayed
 
 function Piece(kind, value) {
     this.kind = kind;
@@ -678,16 +682,10 @@ function checkingWords(pieces, words, score) {
                         html: defs,
                         icon: `info`
                     }).then(() => {
+                        allWords.push(mainWord);
                         player.score += score;
                         removeMultipleScore(pieces);
-                        if (player.piecePlaces.filter(place => place.hasChildNodes()).length > 0) {
-                            randomSetPieces(player);
-                            player.piecePlaces.filter(place => place.hasChildNodes()).forEach(place => {
-                                place.removeChild(place.firstChild);
-                            });
-                            putPieces(player);
-                            return resetTurn(player);
-                        } else if (allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).map(p => p.firstChild).length == 7) {
+                        if (allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).map(p => p.firstChild).length == 7) {
                             player.score += 50;
                             Swal.fire({
                                 width: 300,
@@ -698,8 +696,17 @@ function checkingWords(pieces, words, score) {
                                 timerProgressBar: true,
                                 showConfirmButton: false
                             }).then(() => {
+                                allPoints.push(score + 50);
                                 return resetTurn(player);
                             });
+                        } else {
+                            allPoints.push(score);
+                            randomSetPieces(player);
+                            player.piecePlaces.filter(place => place.hasChildNodes()).forEach(place => {
+                                place.removeChild(place.firstChild);
+                            });
+                            putPieces(player);
+                            return resetTurn(player);
                         };
                     });
                 })
@@ -787,9 +794,20 @@ function resetTurn(player) {
 
 function gameOverCheck(player) {
     if (player.lives.value == 0 || passCount > 0 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
+        let highestPoint = allPoints.sort((a, b) => b - a)[0],
+            averagePoint = allPoints.reduce((pv, cv) => pv + cv) / allPoints.length,
+            longestWord = allWords.map(p => p.length),
+            wordsPlayed = allWords.length;
+        longrstWord = longestWord.sort((a, b) => b - a)[0];
         Swal.fire({
             width: 300,
             title: `Skor Akhir : ${player.score}`,
+            html: `
+                    <li>Poin Tertinggi          : ${highestPoint} Poin</li>
+                    <li>Poin Rata-rata          : ${averagePoint} Poin</li>
+                    <li>Kata Terpanjang         : ${longestWord} Huruf</li>
+                    <li>Jumlah Kata Terbentuk   : ${wordsPlayed} Kata</li>
+            `,
             imageUrl: player.icon,
             imageWidth: 70,
             imageHeight: 70
@@ -955,6 +973,27 @@ nextCheck.addEventListener(`click`, () => {
             return resetTurn(player);
         };
     };
+});
+
+gameHelps.addEventListener(`click`, () => {
+    Swal.fire({
+        title: `Kredit :`,
+        html: `Rest API oleh <a href="http://kateglo.com" target="_blank">kateglo.com</a>
+                <br>
+                Dibuat dengan SweetAlert2
+                <br>
+                .
+                <br>
+                <a href="https://id.m.wikipedia.org/wiki/Scrabble" target="_blank">Cara Bermain (?)</a>`,
+        footer: `&copy 2020 kalUnite`,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: `Kembali`,
+        imageUrl: `img/logo.png`,
+        imageWidth: 150,
+        imageHeight: 150,
+        imageAlt: `Draughts`
+    });
 });
 
 startScreen();
