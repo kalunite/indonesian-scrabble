@@ -1003,3 +1003,4 @@ gameHelps.addEventListener(`click`, () => {
 
 startScreen();
 gamePlay();
+// Finished;
