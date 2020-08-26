@@ -14,7 +14,10 @@ const p1 = {
     score: 0,
     scoreBoard: document.querySelector(`.p1-panel .score`),
     lives: document.querySelector(`.p1-panel progress.lives`),
-    panel: document.querySelector(`.p1-panel`)
+    panel: document.querySelector(`.p1-panel`),
+    allWords: [],
+    allPoints: [],
+    allDecPoints: [],
 };
 const p2 = {
     name: `P2`,
@@ -24,7 +27,10 @@ const p2 = {
     score: 0,
     scoreBoard: document.querySelector(`.p2-panel .score`),
     lives: document.querySelector(`.p2-panel progress.lives`),
-    panel: document.querySelector(`.p2-panel`)
+    panel: document.querySelector(`.p2-panel`),
+    allWords: [],
+    allPoints: [],
+    allDecPoints: [],
 };
 
 let selectedPiece,
@@ -59,9 +65,7 @@ let selectedPiece,
     .fill(new Piece(`Y`, 5), 97, 99)
     .fill(new Piece(`Z`, 10), 99, 100),
     kindsLetter = [],
-    places = [],
-    allWords = [],
-    allPoints = [];
+    places = [];
 
 function Piece(kind, value) {
     this.kind = kind;
@@ -178,6 +182,10 @@ function swapPiece() {
                 document.querySelectorAll(`.available-swap`).forEach(as => {
                     as.removeEventListener(`click`, swapSelect);
                 });
+                if (singleMode) {
+                    player.score -= selectedSwaps.map(s => parseInt(s.value)).reduce((pv, cv) => pv + cv);
+                    player.allDecPoints.push(...selectedSwaps.map(s => parseInt(s.value)));
+                };
                 swapAct(player);
             };
         });
@@ -681,7 +689,7 @@ function checkingWords(pieces, words, score) {
                         html: defs,
                         icon: `info`
                     }).then(() => {
-                        allWords.push(mainWord);
+                        player.allWords.push(...words);
                         player.score += score;
                         removeMultipleScore(pieces);
                         if (allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).map(p => p.firstChild).length == 7) {
@@ -695,11 +703,11 @@ function checkingWords(pieces, words, score) {
                                 timerProgressBar: true,
                                 showConfirmButton: false
                             }).then(() => {
-                                allPoints.push(score + 50);
+                                player.allPoints.push(score + 50);
                                 return resetTurn(player);
                             });
                         } else {
-                            allPoints.push(score);
+                            player.allPoints.push(score);
                             randomSetPieces(player);
                             player.piecePlaces.filter(place => place.hasChildNodes()).forEach(place => {
                                 place.removeChild(place.firstChild);
@@ -795,27 +803,35 @@ function gameOverCheck(player) {
     if (player.lives.value == 0 || passCount > 0 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
         let highestPoint = 0,
             averagePoint = 0,
+            decrementPoint = 0,
             longestWord = 0,
             wordsPlayed = 0;
-        if (allPoints.length != 0 || allWords.length != 0) {
-            highestPoint = allPoints.sort((a, b) => b - a)[0];
-            averagePoint = Math.round(allPoints.reduce((pv, cv) => pv + cv) / allPoints.length);
-            longestWord = allWords.map(p => p.length);
+        if (player.allPoints.length != 0 || player.allWords.length != 0) {
+            highestPoint = player.allPoints.sort((a, b) => b - a)[0];
+            averagePoint = Math.round(player.allPoints.reduce((pv, cv) => pv + cv) / player.allPoints.length);
+            longestWord = player.allWords.map(p => p.length);
             longestWord = longestWord.sort((a, b) => b - a)[0];
-            wordsPlayed = allWords.length;
+            wordsPlayed = player.allWords.length;
+        };
+        if (player.allDecPoints.length != 0) {
+            decrementPoint = player.allDecPoints.reduce((pv, cv) => pv + cv);
         };
         Swal.fire({
             width: 300,
             title: `Skor Akhir : ${player.score}`,
             html: `
-                    <li>Poin Tertinggi          : ${highestPoint} Poin</li>
-                    <li>Poin Rata-rata          : ${averagePoint} Poin</li>
+                    <li>Skor Tertinggi          : ${highestPoint} Poin</li>
+                    <li>Skor Rata-rata          : ${averagePoint} Poin</li>
+                    <li>Pengurangan Skor        : -${decrementPoint} Poin</li>
                     <li>Kata Terpanjang         : ${longestWord} Huruf</li>
-                    <li>Jumlah Kata Terbentuk   : ${wordsPlayed} Kata</li>
+                    <li>Kata Terbentuk          : ${wordsPlayed} Kata</li>
+                    <br>
+                    *Pengurangan skor terjadi karena penukaran huruf, sesuai dengan jumlah poin dari huruf yang  ditukar
             `,
             imageUrl: player.icon,
             imageWidth: 70,
-            imageHeight: 70
+            imageHeight: 70,
+            footer: `Muat ulang untuk memulai kembali`
         });
     } else {
         return gamePlay();
@@ -832,7 +848,8 @@ function winnerCheck(player) {
                     imageUrl: player.icon,
                     imageWidth: 70,
                     imageHeight: 70,
-                    text: `${player.name} (${player.score}) > (${enemy.score}) ${enemy.name}`
+                    text: `${player.name} (${player.score}) > (${enemy.score}) ${enemy.name}`,
+                    footer: `Muat ulang untuk memulai kembali`
                 });
             };
         },
@@ -847,7 +864,8 @@ function winnerCheck(player) {
             imageUrl: enemy.icon,
             imageWidth: 70,
             imageHeight: 70,
-            text: `Nyawa ${player.name} telah habis !!!`
+            text: `Nyawa ${player.name} telah habis !!!`,
+            footer: `Muat ulang untuk memulai kembali`
         });
     } else if (passCount >= 6 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
         if (letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
@@ -863,7 +881,8 @@ function winnerCheck(player) {
                 imageUrl: `img/I.png`,
                 imageWidth: 70,
                 imageHeight: 70,
-                text: `${player.name} (${player.score}) == (${enemy.score}) ${enemy.name}`
+                text: `${player.name} (${player.score}) == (${enemy.score}) ${enemy.name}`,
+                footer: `Muat ulang untuk memulai kembali`
             });
         };
     } else {
