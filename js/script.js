@@ -676,7 +676,9 @@ function checkingWords(pieces, words, score) {
         promisesOfWords = [],
         mainWord = [...words][0],
         fetchMainWord = () => {
-            fetch(`https://cors-anywhere.herokuapp.com/http://kateglo.com/api.php?format=json&phrase=${mainWord}`)
+            fetch(`http://kateglo.com/api.php?format=json&phrase=${mainWord}`, {
+                    mode: 'no-cors'
+                })
                 .then(response => response.json())
                 .finally(() => loading.style.display = ``)
                 .then(response => {
@@ -1016,7 +1018,7 @@ gameHelps.addEventListener(`click`, () => {
         imageUrl: `img/logo.png`,
         imageWidth: 150,
         imageHeight: 150,
-        imageAlt: `Draughts`
+        imageAlt: `IDS`
     });
 });
 
