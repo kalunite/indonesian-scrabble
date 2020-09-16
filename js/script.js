@@ -678,7 +678,7 @@ function checkingWords(pieces, words, score) {
         fetchMainWord = () => {
             fetch(`http://kateglo.com/api.php?format=json&phrase=${mainWord}`, {
                     header: {
-                       'Allow-Cross-Origin': '*'
+                       'Access-Control-Allow-Origin': '*'
                     }
                 })
                 .then(response => response.json())
