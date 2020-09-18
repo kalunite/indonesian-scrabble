@@ -676,8 +676,9 @@ function checkingWords(pieces, words, score) {
         promisesOfWords = [],
         mainWord = [...words][0],
         fetchMainWord = () => {
-            fetch(`https://cors-anywhere.herokuapp.com/http://kateglo.com/api.php?format=json&phrase=${mainWord}`)
-                .then(response => response.json())
+            fetch(`http://kateglo.com/api.php?format=json&phrase=${mainWord}`, {
+                    mode: 'no-cors'
+                }).then(response => response.json())
                 .finally(() => loading.style.display = ``)
                 .then(response => {
                     let defs = ``;
@@ -729,7 +730,9 @@ function checkingWords(pieces, words, score) {
         };
     loading.style.display = `block`;
     words.map(word => {
-        promisesOfWords.push(fetch(`https://cors-anywhere.herokuapp.com/http://kateglo.com/api.php?format=json&phrase=${word}`).then(response => response.json()))
+        promisesOfWords.push(fetch(`http://kateglo.com/api.php?format=json&phrase=${word}`, {
+            mode: 'no-cors'
+        }).then(response => response.json()))
     });
     Promise.all(promisesOfWords)
         .finally(() => loading.style.display = ``)
@@ -814,7 +817,7 @@ function gameOverCheck(player) {
             wordsPlayed = player.allWords.length;
         };
         if (player.allDecPoints.length != 0) {
-            decrementPoint = player.allDecPoints.reduce((pv, cv) => pv + cv);
+            decrementPoint = player.allDecPoints.reduce((pv, cv) => pv + cv) * (-1);
         };
         Swal.fire({
             width: 300,
@@ -822,7 +825,7 @@ function gameOverCheck(player) {
             html: `
                     <li>Skor Tertinggi          : ${highestPoint} Poin</li>
                     <li>Skor Rata-rata          : ${averagePoint} Poin</li>
-                    <li>Pengurangan Skor        : -${decrementPoint} Poin</li>
+                    <li>Pengurangan Skor        : ${decrementPoint} Poin</li>
                     <li>Kata Terpanjang         : ${longestWord} Huruf</li>
                     <li>Kata Terbentuk          : ${wordsPlayed} Kata</li>
                     <br>
@@ -1016,7 +1019,7 @@ gameHelps.addEventListener(`click`, () => {
         imageUrl: `img/logo.png`,
         imageWidth: 150,
         imageHeight: 150,
-        imageAlt: `Draughts`
+        imageAlt: `IDS`
     });
 });
 
