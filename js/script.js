@@ -676,9 +676,8 @@ function checkingWords(pieces, words, score) {
         promisesOfWords = [],
         mainWord = [...words][0],
         fetchMainWord = () => {
-            fetch(`http://kateglo.com/api.php?format=json&phrase=${mainWord}`, {
-                    mode: 'no-cors'
-                }).then(response => response.json())
+            fetch(`https://cors-anywhere.herokuapp.com/http://kateglo.com/api.php?format=json&phrase=${mainWord}`)
+                .then(response => response.json())
                 .finally(() => loading.style.display = ``)
                 .then(response => {
                     let defs = ``;
@@ -730,9 +729,8 @@ function checkingWords(pieces, words, score) {
         };
     loading.style.display = `block`;
     words.map(word => {
-        promisesOfWords.push(fetch(`http://kateglo.com/api.php?format=json&phrase=${word}`, {
-            mode: 'no-cors'
-        }).then(response => response.json()))
+        promisesOfWords.push(fetch(`https://cors-anywhere.herokuapp.com/http://kateglo.com/api.php?format=json&phrase=${word}`)
+            .then(response => response.json()))
     });
     Promise.all(promisesOfWords)
         .finally(() => loading.style.display = ``)
