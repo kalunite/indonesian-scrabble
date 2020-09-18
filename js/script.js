@@ -730,9 +730,14 @@ function checkingWords(pieces, words, score) {
         };
     loading.style.display = `block`;
     words.map(word => {
+<<<<<<< HEAD
         promisesOfWords.push(fetch(`http://kateglo.com/api.php?format=json&phrase=${word}`, {
             mode: 'no-cors'
         }).then(response => response.json()))
+=======
+        promisesOfWords.push(fetch(`http://kateglo.com/api.php?format=json&phrase=${word}`)
+            .then(response => response.json()))
+>>>>>>> d0ff4c904d1bf3ce42efa3433b6365db6b5fdbcb
     });
     Promise.all(promisesOfWords)
         .finally(() => loading.style.display = ``)
