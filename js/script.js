@@ -729,7 +729,11 @@ function checkingWords(pieces, words, score) {
                 });
         };
     loading.style.display = `block`;
-
+    words.map(word => {
+        promisesOfWords.push(fetch(`http://kateglo.com/api.php?format=json&phrase=${word}`, {
+            mode: 'no-cors'
+        }).then(response => response.json()))
+    });
     Promise.all(promisesOfWords)
         .finally(() => loading.style.display = ``)
         .then(() => {
