@@ -630,13 +630,13 @@ function selectedWords() {
         for (let ic = 0; ic < places[ir].length; ic++) {
             if (places[ir][ic].hasChildNodes() && !places[ir][ic].firstChild.classList.contains(`confirmed`)) {
                 if (
-                    places[ir][ic + 1] != null && places[ir][ic + 1].hasChildNodes() ||
-                    places[ir][ic - 1] != null && places[ir][ic - 1].hasChildNodes()
+                    places[ir][ic + 1] != null && places[ir][ic + 1].hasChildNodes() && !places[ir][ic + 1].firstChild.classList.contains(`confirmed`) ||
+                    places[ir][ic - 1] != null && places[ir][ic - 1].hasChildNodes() && !places[ir][ic - 1].firstChild.classList.contains(`confirmed`)
                 ) {
                     hWordSearch(allWords, mainWord, ir, ic, accum, word);
                 } else if (
-                    places[ir + 1] != null && places[ir + 1][ic].hasChildNodes() ||
-                    places[ir - 1] != null && places[ir - 1][ic].hasChildNodes()
+                    places[ir + 1] != null && places[ir + 1][ic].hasChildNodes() && !places[ir + 1][ic].firstChild.classList.contains(`confirmed`) ||
+                    places[ir - 1] != null && places[ir - 1][ic].hasChildNodes() && !places[ir - 1][ic].firstChild.classList.contains(`confirmed`)
                 ) {
                     vWordSearch(allWords, mainWord, ir, ic, accum, word);
                 };
@@ -954,6 +954,7 @@ function startScreen() {
     }).then(result => {
         if (result.isConfirmed) {
             singleMode = selectedMode != document.querySelector(`.choose-mode .multi-player`) && selectedMode != null ? true : false;
+            return gamePlay();
         } else {
             document.querySelectorAll(`.choose-mode img`).forEach(m => {
                 m.removeEventListener(`click`, chooseMode);
@@ -991,7 +992,11 @@ nextCheck.addEventListener(`click`, () => {
         if (wordsOfPieces.length > 0) {
             words = wordsOfPieces.map(word => word.map(w => w.dataset.kind).reduce((pv, cv) => pv + cv));
             wordsScore = scoresCount(wordsOfPieces).reduce((pv, cv) => pv + cv);
-            return checkingWords(wordsOfPieces, words, wordsScore);
+            console.log('wordsOfPieces :>> ', wordsOfPieces);
+            console.log('words :>> ', words);
+            console.log('wordsScore :>> ', wordsScore);
+            return resetTurn(player);
+            // return checkingWords(wordsOfPieces, words, wordsScore);
         } else {
             pullLetter();
             player.lives.value -= 1;
@@ -1022,4 +1027,3 @@ gameHelps.addEventListener(`click`, () => {
 });
 
 startScreen();
-gamePlay();
