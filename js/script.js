@@ -992,11 +992,7 @@ nextCheck.addEventListener(`click`, () => {
         if (wordsOfPieces.length > 0) {
             words = wordsOfPieces.map(word => word.map(w => w.dataset.kind).reduce((pv, cv) => pv + cv));
             wordsScore = scoresCount(wordsOfPieces).reduce((pv, cv) => pv + cv);
-            console.log('wordsOfPieces :>> ', wordsOfPieces);
-            console.log('words :>> ', words);
-            console.log('wordsScore :>> ', wordsScore);
-            return resetTurn(player);
-            // return checkingWords(wordsOfPieces, words, wordsScore);
+            return checkingWords(wordsOfPieces, words, wordsScore);
         } else {
             pullLetter();
             player.lives.value -= 1;
