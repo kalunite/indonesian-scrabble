@@ -630,13 +630,13 @@ function selectedWords() {
         for (let ic = 0; ic < places[ir].length; ic++) {
             if (places[ir][ic].hasChildNodes() && !places[ir][ic].firstChild.classList.contains(`confirmed`)) {
                 if (
-                    places[ir][ic + 1] != null && places[ir][ic + 1].hasChildNodes() && !places[ir][ic + 1].firstChild.classList.contains(`confirmed`) ||
-                    places[ir][ic - 1] != null && places[ir][ic - 1].hasChildNodes() && !places[ir][ic - 1].firstChild.classList.contains(`confirmed`)
+                    places[ir].filter(rp => rp.hasChildNodes() && !rp.firstChild.classList.contains(`confirmed`)).length >=
+                    colomnPlaces(ic).filter(cp => cp.hasChildNodes() && !cp.firstChild.classList.contains(`confirmed`)).length
                 ) {
                     hWordSearch(allWords, mainWord, ir, ic, accum, word);
                 } else if (
-                    places[ir + 1] != null && places[ir + 1][ic].hasChildNodes() && !places[ir + 1][ic].firstChild.classList.contains(`confirmed`) ||
-                    places[ir - 1] != null && places[ir - 1][ic].hasChildNodes() && !places[ir - 1][ic].firstChild.classList.contains(`confirmed`)
+                    places[ir].filter(rp => rp.hasChildNodes() && !rp.firstChild.classList.contains(`confirmed`)).length <
+                    colomnPlaces(ic).filter(cp => cp.hasChildNodes() && !cp.firstChild.classList.contains(`confirmed`)).length
                 ) {
                     vWordSearch(allWords, mainWord, ir, ic, accum, word);
                 };
