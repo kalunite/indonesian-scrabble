@@ -198,6 +198,7 @@ function swapPiece() {
 function swapBlankLetter() {
     let swapAct = player => {
         if (player.piecePlaces.some(p => p.hasChildNodes() && p.firstChild.dataset.kind == this.dataset.kind)) {
+            this.removeEventListener(`click`, swapBlankLetter);
             this.classList.remove(`blank-filled`);
             this.classList.remove(`available-switch`);
             if (document.querySelector(`.available-switch`) != null &&
