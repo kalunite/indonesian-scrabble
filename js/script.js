@@ -461,56 +461,17 @@ function putLetter() {
 
 function pullLetter() {
     let player = p1IsNext ? p1 : p2,
-        isConnected = piece => {
-            for (let ir = 0; ir < places.length; ir++) {
-                for (let ic = 0; ic < places[ir].length; ic++) {
-                    if (piece.parentNode == places[ir][ic]) {
-                        if (
-                            places[ir - 1] != null && places[ir - 1][ic].hasChildNodes() && places[ir - 1][ic].firstChild.classList.contains(`confirmed`) ||
-                            places[ir][ic - 1] != null && places[ir][ic - 1].hasChildNodes() &&
-                            places[ir][ic - 1].firstChild.classList.contains(`confirmed`) ||
-                            places[ir + 1] != null && places[ir + 1][ic].hasChildNodes() && places[ir + 1][ic].firstChild.classList.contains(`confirmed`) ||
-                            places[ir][ic + 1] != null && places[ir][ic + 1].hasChildNodes() &&
-                            places[ir][ic + 1].firstChild.classList.contains(`confirmed`)
-                        ) {
-                            return true;
-                        } else {
-                            return false;
-                        };
-                    };
-                };
-            };
-        },
         pieceToPull = () => {
-            let pieceAvailableToPull = [],
-                accum;
-            for (let ir = 0; ir < places.length; ir++) {
-                for (let ic = 0; ic < places[ir].length; ic++) {
-                    if (this.parentNode == places[ir][ic]) {
-                        pieceAvailableToPull.push(this);
-                        if (places[ir + 1] != null && places[ir + 1][ic].hasChildNodes()) {
-                            accum = 1;
-                            while (places[ir + accum] != null && places[ir + accum][ic].hasChildNodes()) {
-                                pieceAvailableToPull.push(places[ir + accum][ic].firstChild);
-                                accum++;
-                            };
-                        } else if (places[ir][ic + 1] != null && places[ir][ic + 1].hasChildNodes()) {
-                            accum = 1;
-                            while (places[ir][ic + accum] != null && places[ir][ic + accum].hasChildNodes()) {
-                                pieceAvailableToPull.push(places[ir][ic + accum].firstChild);
-                                accum++;
-                            };
-                        };
-                        pieceAvailableToPull = pieceAvailableToPull.filter(p => !p.classList.contains(`confirmed`));
-                        if (
-                            pieceAvailableToPull.includes(startPlace.firstChild) ||
-                            pieceAvailableToPull.some(p => isConnected(p))
-                        ) {
-                            pieceAvailableToPull = [];
-                            allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).forEach(p => pieceAvailableToPull.push(p.firstChild));
-                        };
-                    };
-                };
+            let pieceAvailableToPull = [];
+            allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).forEach(p => pieceAvailableToPull.push(p.firstChild));
+            if (pieceAvailableToPull.indexOf(this) < Math.floor(pieceAvailableToPull.length / 2)) {
+                pieceAvailableToPull = pieceAvailableToPull.slice(0, pieceAvailableToPull.indexOf(this) + 1);
+            } else {
+                pieceAvailableToPull = pieceAvailableToPull.slice(pieceAvailableToPull.indexOf(this));
+            };
+            if (pieceAvailableToPull.includes(startPlace.firstChild)) {
+                pieceAvailableToPull = [];
+                allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).forEach(p => pieceAvailableToPull.push(p.firstChild));
             };
             return pieceAvailableToPull;
         },
@@ -1035,3 +996,5 @@ gameHelps.addEventListener(`click`, () => {
 });
 
 startScreen();
+// made with kateglo.com API's & sweetalert2
+// copyright 2020 kalUnite
