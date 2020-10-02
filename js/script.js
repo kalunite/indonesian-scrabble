@@ -461,6 +461,26 @@ function putLetter() {
 
 function pullLetter() {
     let player = p1IsNext ? p1 : p2,
+        isConnected = piece => {
+            for (let ir = 0; ir < places.length; ir++) {
+                for (let ic = 0; ic < places[ir].length; ic++) {
+                    if (piece.parentNode == places[ir][ic]) {
+                        if (
+                            places[ir - 1] != null && places[ir - 1][ic].hasChildNodes() && places[ir - 1][ic].firstChild.classList.contains(`confirmed`) ||
+                            places[ir][ic - 1] != null && places[ir][ic - 1].hasChildNodes() &&
+                            places[ir][ic - 1].firstChild.classList.contains(`confirmed`) ||
+                            places[ir + 1] != null && places[ir + 1][ic].hasChildNodes() && places[ir + 1][ic].firstChild.classList.contains(`confirmed`) ||
+                            places[ir][ic + 1] != null && places[ir][ic + 1].hasChildNodes() &&
+                            places[ir][ic + 1].firstChild.classList.contains(`confirmed`)
+                        ) {
+                            return true;
+                        } else {
+                            return false;
+                        };
+                    };
+                };
+            };
+        },
         pieceToPull = () => {
             let pieceAvailableToPull = [];
             allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).forEach(p => pieceAvailableToPull.push(p.firstChild));
@@ -469,7 +489,7 @@ function pullLetter() {
             } else {
                 pieceAvailableToPull = pieceAvailableToPull.slice(pieceAvailableToPull.indexOf(this));
             };
-            if (pieceAvailableToPull.includes(startPlace.firstChild)) {
+            if (pieceAvailableToPull.includes(startPlace.firstChild) || pieceAvailableToPull.some(p => isConnected(p))) {
                 pieceAvailableToPull = [];
                 allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).forEach(p => pieceAvailableToPull.push(p.firstChild));
             };
