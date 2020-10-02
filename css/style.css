@@ -330,6 +330,10 @@ progress.lives {
 }
 
 @media screen and (max-width: 767px) {
+    .panels {
+        border-radius: 50% 50% 0 0;
+    }
+
     .pack-panel .length {
         font-size: 10px;
         margin-top: -25px;
