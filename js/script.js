@@ -722,7 +722,7 @@ function checkingWords(pieces, words, score) {
         };
     loading.style.display = `block`;
     words.map(word => {
-        promisesOfWords.push(fetch(`https://cors-anywhere.herokuapp.com/http://kateglo.com/api.php?format=json&phrase=${word}`)
+        promisesOfWords.push(fetch(`https://cors.eu.org/http://kateglo.com/api.php?format=json&phrase=${word}`)
             .then(response => response.json()))
     });
     Promise.all(promisesOfWords)
