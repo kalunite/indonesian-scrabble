@@ -65,7 +65,8 @@ let selectedPiece,
     .fill(new Piece(`Y`, 5), 97, 99)
     .fill(new Piece(`Z`, 10), 99, 100),
     kindsLetter = [],
-    places = [];
+    places = [],
+    apiLink = `https://cors.eu.org/http://kateglo.lostfocus.org/api.php?format=json&phrase=`;
 
 function Piece(kind, value) {
     this.kind = kind;
@@ -669,7 +670,7 @@ function checkingWords(pieces, words, score) {
         promisesOfWords = [],
         mainWord = [...words][0],
         fetchMainWord = () => {
-            fetch(`https://cors.eu.org/http://kateglo.com/api.php?format=json&phrase=${mainWord}`)
+            fetch(apiLink + mainWord)
                 .then(response => response.json())
                 .finally(() => loading.style.display = ``)
                 .then(response => {
@@ -722,7 +723,7 @@ function checkingWords(pieces, words, score) {
         };
     loading.style.display = `block`;
     words.map(word => {
-        promisesOfWords.push(fetch(`https://cors.eu.org/http://kateglo.com/api.php?format=json&phrase=${word}`)
+        promisesOfWords.push(fetch(apiLink + word)
             .then(response => response.json()))
     });
     Promise.all(promisesOfWords)
@@ -997,7 +998,7 @@ nextCheck.addEventListener(`click`, () => {
 gameHelps.addEventListener(`click`, () => {
     Swal.fire({
         title: `Kredit :`,
-        html: `Rest API oleh <a href="http://kateglo.com" target="_blank">kateglo.com</a>
+        html: `Rest API oleh <a href="http://kateglo.lostfocus.org" target="_blank">Kateglo</a>
                 <br>
                 Dibuat dengan SweetAlert2
                 <br>
@@ -1016,5 +1017,4 @@ gameHelps.addEventListener(`click`, () => {
 });
 
 startScreen();
-// made with kateglo.com API's & sweetalert2
-// copyright 2020 kalUnite
+// made with kateglo's API & sweetalert2 | copyright 2020 kalUnite
