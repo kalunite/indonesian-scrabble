@@ -241,7 +241,7 @@ progress.lives {
 }
 
 .blank-filled {
-    border-radius: 50%;
+    border-radius: 0 0 50% 0;
     box-shadow: 0 0 7px 3px rgb(175, 95, 250);
 }
 
