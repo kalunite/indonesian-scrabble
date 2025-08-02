@@ -137,6 +137,7 @@ function swapPiece() {
                 place.removeChild(place.firstChild);
             });
             putPieces(player);
+            passCount = 0;
             setTimeout(() => {
                 return resetTurn(player);
             }, 1000);
@@ -202,8 +203,7 @@ function swapBlankLetter() {
             this.classList.remove(`blank-filled`);
             this.classList.remove(`available-switch`);
             if (document.querySelector(`.available-switch`) != null &&
-                document.querySelector(`.available-switch`).dataset.kind == this.dataset.kind &&
-                player.pieces.some(p => !Array.from(document.querySelectorAll(`.blank-filled`)).some(b => p != null && b.dataset.kind == p.kind))
+                player.pieces.filter(p => p != null && this.dataset.kind == p.kind).length == 1
             ) {
                 document.querySelector(`.available-switch`).classList.remove(`available-switch`);
             };
@@ -698,6 +698,8 @@ function checkingWords(pieces, words, score) {
                                 showConfirmButton: false
                             }).then(() => {
                                 player.allPoints.push(score + 50);
+                                randomSetPieces(player);
+                                putPieces(player);
                                 return resetTurn(player);
                             });
                         } else {
@@ -862,7 +864,7 @@ function winnerCheck(player) {
             text: `Nyawa ${player.name} telah habis !!!`,
             footer: `Muat ulang untuk memulai kembali`
         });
-    } else if (passCount >= 6 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
+    } else if (passCount > 1 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
         if (letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
             player.score += countingValueOfPiecesLeft(enemy);
             enemy.score -= countingValueOfPiecesLeft(enemy);
@@ -983,6 +985,7 @@ nextCheck.addEventListener(`click`, () => {
         return resetTurn(player);
     } else if (nextCheck.innerHTML == `Cek`) {
         wordsOfPieces = [...selectedWords()];
+        passCount = 0
         if (wordsOfPieces.length > 0) {
             words = wordsOfPieces.map(word => word.map(w => w.dataset.kind).reduce((pv, cv) => pv + cv));
             wordsScore = scoresCount(wordsOfPieces).reduce((pv, cv) => pv + cv);
@@ -1017,4 +1020,4 @@ gameHelps.addEventListener(`click`, () => {
 });
 
 startScreen();
-// made with kateglo's API & sweetalert2 | copyright 2020 kalUnite
+// made with kateglo's API & sweetalert2 || copyright 2020 kalUnite
