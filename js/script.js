@@ -985,13 +985,14 @@ function gamePlay() {
 
 nextCheck.addEventListener(`click`, () => {
     let player = p1IsNext ? p1 : p2,
+        activePiecesOnBoard = allPlaces.filter(p => p.hasChildNodes() && !p.firstChild.classList.contains(`confirmed`)).map(p => p.firstChild),
         wordsOfPieces = [],
         words = [],
         wordsScore;
-    if (nextCheck.innerHTML == `Pas`) {
+    if (nextCheck.innerHTML == `Pas` || activePiecesOnBoard.length == 0) {
         passCount += 1;
         return resetTurn(player);
-    } else if (nextCheck.innerHTML == `Cek`) {
+    } else if (nextCheck.innerHTML == `Cek` || activePiecesOnBoard.length > 0) {
         wordsOfPieces = [...selectedWords()];
         passCount = 0
         if (wordsOfPieces.length > 0) {
