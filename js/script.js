@@ -883,10 +883,11 @@ function winnerCheck(player) {
         };
     } else {
         Swal.fire({
-            width: 300,
+            width: `80%`,
             imageUrl: enemy.icon,
-            imageWidth: 30,
-            imageHeight: 30,
+            imageWidth: 40,
+            imageHeight: 40,
+            position: `bottom`,
             text: `Giliran ${enemy.name}!`,
         }).then(() => {    
             p1IsNext = !p1IsNext;
