@@ -38,6 +38,7 @@ let selectedPiece,
     singleMode = false,
     p1IsNext = true,
     swapTurn = true,
+    extraCount = false,
     letters = new Array(100)
     .fill(new Piece(`blank`, 0), 0, 2)
     .fill(new Piece(`A`, 1), 2, 21)
@@ -864,9 +865,10 @@ function winnerCheck(player) {
             footer: `Muat ulang untuk memulai kembali`
         });
     } else if (passCount > 1 || letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
-        if (letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
+        if (extraCount == false && letters.length == 0 && player.pieces.filter(Boolean).length == 0) {
             player.score += countingValueOfPiecesLeft(enemy);
             enemy.score -= countingValueOfPiecesLeft(enemy);
+            extraCount = true;
         };
         countingScore(player, enemy);
         countingScore(enemy, player);
@@ -883,10 +885,10 @@ function winnerCheck(player) {
         };
     } else {
         Swal.fire({
-            width: `80%`,
+            width: `70%`,
             imageUrl: enemy.icon,
-            imageWidth: 40,
-            imageHeight: 40,
+            imageWidth: 35,
+            imageHeight: 35,
             position: `bottom`,
             text: `Giliran ${enemy.name}!`,
         }).then(() => {    
