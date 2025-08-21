@@ -138,9 +138,7 @@ function swapPiece() {
             });
             putPieces(player);
             passCount = 0;
-            setTimeout(() => {
-                return resetTurn(player);
-            }, 1000);
+            return resetTurn(player);
         };
 
     function swapSelect() {
@@ -749,8 +747,9 @@ function checkingWords(pieces, words, score) {
                     icon: `warning`,
                     timer: 3000,
                     timerProgressBar: true,
+                }).then(() => {
+                    return resetTurn(player);
                 });
-                return resetTurn(player);
             };
         });
 };
@@ -883,8 +882,16 @@ function winnerCheck(player) {
             });
         };
     } else {
-        p1IsNext = !p1IsNext;
-        return gamePlay();
+        Swal.fire({
+            width: 300,
+            imageUrl: enemy.icon,
+            imageWidth: 30,
+            imageHeight: 30,
+            text: `Giliran ${enemy.name}!`,
+        }).then(() => {    
+            p1IsNext = !p1IsNext;
+            return gamePlay();
+        });
     };
 };
 
@@ -1020,4 +1027,4 @@ gameHelps.addEventListener(`click`, () => {
 });
 
 startScreen();
-// made with kateglo's API & sweetalert2 || copyright 2020 kalUnite
+// made with kateglo's API & sweetalert2 | copyright 2020 kalUnite
