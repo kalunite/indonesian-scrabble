@@ -202,7 +202,7 @@ function swapBlankLetter() {
             this.classList.remove(`blank-filled`);
             this.classList.remove(`available-switch`);
             if (document.querySelector(`.available-switch`) != null &&
-                player.pieces.filter(p => p != null && this.dataset.kind == p.kind || document.querySelector(`.available-switch`).dataset.kind == p.kind).length == 1
+                player.pieces.filter(p => p != null).filter( p => this.dataset.kind == p.kind || document.querySelector(`.available-switch`).dataset.kind == p.kind).length == 1
             ) {
                 document.querySelector(`.available-switch`).classList.remove(`available-switch`);
             };
